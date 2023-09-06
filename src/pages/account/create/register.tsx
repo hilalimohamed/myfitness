@@ -4,9 +4,12 @@ import { FaFacebookF } from 'react-icons/fa'
 import { FaTwitter } from 'react-icons/fa'
 import Image from 'next/image'
 import img from '@/public/yhj.jpg'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 
 export default function register() {
+  const router = useRouter()
   const [values, setValues] = useState({
     username: '',
     email: '',
@@ -19,18 +22,36 @@ export default function register() {
     password: 'hidden',
     confirmPassword: 'hidden',
   })
+  const [disabled, setDisabled] = useState('')
   const handleChange = (e: any) => {
     setValues({ ...values, [e.target.name]: e.target.value })
-
-    console.log(e)
   }
   const onSubmit = (e: any) => {
     e.preventDefault()
-    console.log(values)
   }
-  const invalidFun = (e:any) => {
-    setHidden({...hidden, [e.target.name]:'block text-xs text-red-500 mx-28 -my-2'})
+  const invalidFun = (e: any) => {
+    setHidden({
+      ...hidden,
+      [e.target.name]: 'block text-xs text-red-500 mx-28 -my-2',
+    })
   }
+  const signup = async () => {
+    try {
+      const res = await axios.post('/api/signup/register', {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      })
+      console.log('signup success',  res.data)
+      router.push('/account/create/login')
+    } catch (error: any) {
+      console.log('signup failed  ', error.message)
+    }
+  }
+  // useEffect(() => {
+
+  // }, [values])
+  
   return (
     <div className="pt-24">
       <div className="px-5 pb-3 pt-5 flex bg-orange-100 rounded-2xl mx-28">
@@ -64,7 +85,7 @@ export default function register() {
                 onInvalid={invalidFun}
                 pattern="^[A-Za-z0-9]{3,14}$"
                 required
-                />
+              />
             </div>
             <h4 id="err" className={hidden.username}>
               username should be 3-14 characters and shouldn't include any
@@ -81,7 +102,7 @@ export default function register() {
                 onChange={handleChange}
                 onInvalid={invalidFun}
                 required
-                />
+              />
             </div>
             <h4 id="err" className={hidden.email}>
               It should be a valid email address!
@@ -98,9 +119,9 @@ export default function register() {
                 onInvalid={invalidFun}
                 // pattern="^[A-Za-z0-9]{3,14}$"
                 // pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$"
-                pattern="^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])[A-Za-z0-9!@#$%^&*()_+]{8,20}$"
+                // pattern="^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])[A-Za-z0-9!@#$%^&*()_+]{8,20}$"
                 required
-                />
+              />
             </div>
             <h4 id="err" className={hidden.password}>
               Password should be 6-20 characters and include at least 1 letter,
@@ -123,7 +144,10 @@ export default function register() {
             <h4 id="err" className={hidden.confirmPassword}>
               Password don't match!
             </h4>
-            <button className="bg-orange-500 px-20 py-2 rounded-md mt-1 text-white font-bold">
+            <button
+              className="bg-orange-500 px-20 py-2 rounded-md mt-1 text-white font-bold"
+              onClick={signup}
+            >
               Sign up
             </button>
             <h5 className="mt-1">Or continue with</h5>

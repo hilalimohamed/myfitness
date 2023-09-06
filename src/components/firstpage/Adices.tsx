@@ -1,7 +1,4 @@
 import Image from "next/image"
-import img from "../../../public/spadri.png"
-import img1 from "../../../public/spa.png"
-import img2 from "../../../public/glog.png"
 import {FaNewspaper} from "react-icons/fa"
 import { MdOutlineSnowshoeing } from "react-icons/md"
 import { VscNotebook } from "react-icons/vsc"
