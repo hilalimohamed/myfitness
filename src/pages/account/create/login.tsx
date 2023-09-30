@@ -19,15 +19,14 @@ export default function login() {
     setvalues({ ...values, [e.target.name]: e.target.value })
   }
   const login = async () => {
-    console.log(values)
     try {
       const response = await axios.post('/api/login/login', {
         email: values.email,
         password: values.password,
       })
-      Cookies.set('token1', response.data.message)
+      Cookies.set('token', response.data.message)
       console.log('login success >> ', response.data)
-      router.push('/account/create/input-name')
+      router.push('/profile/profile')
     } catch (error) {
       console.log('error >> ', error)
     }

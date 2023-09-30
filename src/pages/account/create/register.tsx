@@ -7,8 +7,11 @@ import img from '@/public/yhj.jpg'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import List from '@/src/components/Store'
+import { allOfList } from '@/src/type'
 
 export default function register() {
+  const theArray = List((state: any) => state.arr)
   const router = useRouter()
   const [values, setValues] = useState({
     username: '',
@@ -35,23 +38,45 @@ export default function register() {
       [e.target.name]: 'block text-xs text-red-500 mx-28 -my-2',
     })
   }
+
+  // const inputDate = theArray[3]?.birthdate
+  // const dateObject = new Date(inputDate)
+
+  // // Format the date as "yyyy-MM-dd"
+  // const formattedDate = `${dateObject.getFullYear()}-${(
+  //   dateObject.getMonth() + 1
+  // )
+  //   .toString()
+  //   .padStart(2, '0')}-${dateObject.getDate().toString().padStart(2, '0')}`
+
+  // console.log('Formatted date:', formattedDate)
+
   const signup = async () => {
     try {
       const res = await axios.post('/api/signup/register', {
         username: values.username,
         email: values.email,
         password: values.password,
+        imagePath: 'profile.jpeg',
+        activitie: theArray[2].isActivity,
+        sex: theArray[3].sex,
+        birthdate: theArray[3].birthdate,
+        country: theArray[3].country,
+        tall: theArray[4].tall,
+        weight: theArray[4].weight,
+        weightGoal: theArray[4].weightGoal,
+        goals: theArray[1].goals,
       })
-      console.log('signup success',  res.data)
+      console.log('signup success', res.data)
       router.push('/account/create/login')
     } catch (error: any) {
       console.log('signup failed  ', error.message)
     }
   }
-  // useEffect(() => {
 
-  // }, [values])
-  
+  // console.log('aarraayy   ', theArray[3].birthdate,theArray[4].tall,theArray[3].sex,theArray[1].goals)
+  console.log('aarraayy   ', theArray[3]?.birthdate)
+
   return (
     <div className="pt-24">
       <div className="px-5 pb-3 pt-5 flex bg-orange-100 rounded-2xl mx-28">

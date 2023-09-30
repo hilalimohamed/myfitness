@@ -1,8 +1,19 @@
-import Image from "next/image"
-import img from "../../../public/foodimg.jpg"
-import Link from "next/link"
+import Image from 'next/image'
+import img from '../../../public/foodimg.jpg'
+import Link from 'next/link'
+import { useEffect } from 'react'
 
 export default function Start() {
+  useEffect(() => {
+    const isLSValue = localStorage.getItem('theName')
+    const isLSVOpt = localStorage.getItem('selectedOptions')
+    if (isLSValue) {
+      localStorage.removeItem('theName')
+    }
+    if (isLSVOpt) {
+      localStorage.removeItem('selectedOptions')
+    }
+  }, [])
   return (
     <>
       <div className="flex items-center">

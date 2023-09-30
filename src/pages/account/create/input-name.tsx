@@ -24,7 +24,6 @@ export default function inputName() {
       addlist(firstname)
     }
   }
-  console.log(firstname)
 
   return (
     <div className="pt-24">

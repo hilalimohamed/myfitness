@@ -1,0 +1,670 @@
+import { FormEvent, useState } from 'react'
+import { UpdateFormProps } from '../type'
+import axios from 'axios'
+import { GrLinkNext } from 'react-icons/gr'
+import { BiArrowBack } from 'react-icons/bi'
+
+export default function UpdateForm({ userData }: UpdateFormProps) {
+  const [values, setValues] = useState<any>({
+    username: userData.username || '',
+    activity: userData.profile?.activitie || '',
+    sex: userData.profile?.sex || '',
+    birthdate: userData.profile?.birthdate || '',
+    country: userData.profile?.country || '',
+    tall: userData.profile?.tall || '',
+    weight: userData.profile?.weight || '',
+    weightGoal: userData.profile?.weightGoal || '',
+  })
+
+  const [block, setBlock] = useState(true)
+
+  const nextBack = () => {
+    setBlock(!block)
+  }
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target
+    setValues({ ...values, [name]: value })
+  }
+  // // Format the date as "yyyy-MM-dd"
+
+  // const inputDate = values.birthdate
+  // const dateObject = new Date(inputDate)
+  // const formattedDate = `${dateObject.getFullYear()}-${(
+  //   dateObject.getMonth() + 1)
+  //   .toString()
+  //   .padStart(2, '0')}-${dateObject.getDate().toString().padStart(2, '0')}`
+  // const inputDate = '2003-07-10'
+
+  // Add the time portion "T00:00:00.000Z" to the date string
+
+  // const inputDate = values.birthdate
+  // const formattedDate = `${inputDate}T00:00:00.000Z`
+
+  // console.log('Formatted date:', formattedDate)
+
+  let inputDate = values.birthdate 
+  const suffix = 'T00:00:00.000Z' 
+
+  // Check if the inputDate already ends with the suffix
+  if (!inputDate.endsWith(suffix)) {
+    inputDate += suffix
+  }
+
+  console.log('Formatted date:', inputDate)
+
+
+  // Handle form submission here, e.g., send updated values to the server
+  const updateUser = async () => {
+    try {
+      const response = await axios.put('/api/signup/register', {
+        id: userData.id,
+        username: values.username,
+        activitie: values.activity,
+        sex: values.sex,
+        country: values.country,
+        birthdate: inputDate,
+        tall: parseInt(values.tall),
+        weight: parseInt(values.weight),
+        weightGoal: parseInt(values.weightGoal),
+      })
+      if (response.data.message === 'update') {
+        fetchUpdatedUserData()
+      }
+      console.log(response.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const fetchUpdatedUserData = async () => {
+    try {
+      const response = await axios.get('/api/signup/register')
+      const updatedUserData = response.data
+      console.log(updatedUserData)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return (
+    <div>
+      <div className="max-w-lg mx-auto mt-20 bg-white rounded-md shadow-md overflow-hidden">
+        <div className="px-6 py-4 bg-gray-900 text-white flex justify-between">
+          <h1 className="text-lg font-bold">Edit Profile</h1>
+          <div onClick={nextBack}>
+            {block ? (
+              <GrLinkNext className="bg-white border border-white rounded-full h-5 w-5 font-bold cursor-pointer" />
+            ) : (
+              <BiArrowBack className="bg-white border border-white rounded-full h-5 w-5 font-bold cursor-pointer text-black" />
+            )}
+          </div>
+        </div>
+        {block ? (
+          <div className="px-6 py-4">
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="username"
+                >
+                  Your Name
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="**** **** **** ****"
+                  value={values.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="sex"
+                >
+                  Gender
+                </label>
+                <div className="flex appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                  <label className="mr-2">
+                    <input
+                      type="radio"
+                      id="male"
+                      name="sex"
+                      value="male"
+                      checked={values.sex === 'male'}
+                      onChange={handleChange}
+                    />
+                    Male
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      id="female"
+                      name="sex"
+                      value="female"
+                      checked={values.sex === 'female'}
+                      onChange={handleChange}
+                    />
+                    Female
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="activity"
+                >
+                  Your Activity
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="activity"
+                  name="activity"
+                  type="text"
+                  placeholder="MM/YY"
+                  value={values.activity}
+                  onChange={handleChange}
+                  disabled
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="birthdate"
+                >
+                  Birth Date
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="birthdate"
+                  name="birthdate"
+                  type="date"
+                  placeholder="MM/YY"
+                  value={values.birthdate}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="country"
+                >
+                  Your Country
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="country"
+                  name="country"
+                  type="text"
+                  placeholder="***"
+                  value={values.country}
+                  onChange={handleChange}
+                  disabled
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="tall"
+                >
+                  Your tall
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="tall"
+                  name="tall"
+                  type="number"
+                  placeholder="***"
+                  value={values.tall}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="weight"
+                >
+                  Weight
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  placeholder="Full Name"
+                  value={values.weight}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="weightGoal"
+                >
+                  Weight Goal
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="weightGoal"
+                  name="weightGoal"
+                  type="number"
+                  placeholder="Full Name"
+                  value={values.weightGoal}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={updateUser}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
+            >
+              Save Update
+            </button>
+          </div>
+        ) : (
+          <div className="px-6 py-4">
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="username"
+                >
+                  what you do
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="**** **** **** ****"
+                  value={values.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="sex"
+                >
+                  image
+                </label>
+                <div className="flex appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                  <label className="mr-2">
+                    <input
+                      type="radio"
+                      id="male"
+                      name="sex"
+                      value="male"
+                      checked={values.sex === 'male'}
+                      onChange={handleChange}
+                    />
+                    lmohim
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      id="female"
+                      name="sex"
+                      value="female"
+                      checked={values.sex === 'female'}
+                      onChange={handleChange}
+                    />
+                    Female
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="activity"
+                >
+                  likan
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="activity"
+                  name="activity"
+                  type="text"
+                  placeholder="MM/YY"
+                  value={values.activity}
+                  onChange={handleChange}
+                  disabled
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="birthdate"
+                >
+                  Birth Date
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="birthdate"
+                  name="birthdate"
+                  type="date"
+                  placeholder="MM/YY"
+                  value={values.birthdate}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="country"
+                >
+                  Your Country
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="country"
+                  name="country"
+                  type="text"
+                  placeholder="***"
+                  value={values.country}
+                  onChange={handleChange}
+                  disabled
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="tall"
+                >
+                  tola
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="tall"
+                  name="tall"
+                  type="number"
+                  placeholder="***"
+                  value={values.tall}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-around">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="weight"
+                >
+                  dakchi
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  placeholder="Full Name"
+                  value={values.weight}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 font-bold mb-2"
+                  htmlFor="weightGoal"
+                >
+                  skt db nit
+                </label>
+                <input
+                  className="appearance-none border border-gray-400 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="weightGoal"
+                  name="weightGoal"
+                  type="number"
+                  placeholder="Full Name"
+                  value={values.weightGoal}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={updateUser}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
+            >
+              Save Update
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+//   id          String      @id @default(cuid())
+//   userId      String      @unique
+//   user        User     @relation(fields: [userId], references: [id])
+//   activitie   String?  // You can define this as a string or another suitable data type.
+//   sex         String?
+//   birthdate   DateTime?
+//   country     String?
+//   tall        Float?
+//   weight      Float?
+//   weightGoal  Float?
+// import React from 'react'
+// // import { useCountries } from "use-react-countries";
+// // import {
+// //   Card,
+// //   CardHeader,
+// //   CardBody,
+// //   Input,
+// //   Button,
+// //   Typography,
+// //   Tabs,
+// //   TabsHeader,
+// //   TabsBody,
+// //   Tab,
+// //   TabPanel,
+// //   Select,
+// //   Option,
+// // } from '@material-tailwind/react'
+// // import {
+// //   BanknotesIcon,
+// //   CreditCardIcon,
+// //   LockClosedIcon,
+// // } from "@heroicons/react/24/solid";
+// export default function UpdateForm() {
+//   const [type, setType] = React.useState('card')
+//   const [cardNumber, setCardNumber] = React.useState('')
+//   const [cardExpires, setCardExpires] = React.useState('')
+//   function formatCardNumber(value: string) {
+//     const val = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
+//     const matches = val.match(/\d{4,16}/g)
+//     const match = (matches && matches[0]) || ''
+//     const parts = []
+
+//     for (let i = 0, len = match.length; i < len; i += 4) {
+//       parts.push(match.substring(i, i + 4))
+//     }
+
+//     if (parts.length) {
+//       return parts.join(' ')
+//     } else {
+//       return value
+//     }
+//   }
+
+//   function formatExpires(value: string) {
+//     return value
+//       .replace(/[^0-9]/g, '')
+//       .replace(/^([2-9])$/g, '0$1')
+//       .replace(/^(1{1})([3-9]{1})$/g, '0$1/$2')
+//       .replace(/^0{1,}/g, '0')
+//       .replace(/^([0-1]{1}[0-9]{1})([0-9]{1,2}).*/g, '$1/$2')
+//   }
+
+//   //   const { countries } = useCountries();
+//   return (
+//     <div>
+//       <div className="w-full max-w-[24rem]">
+//         <div
+//           color="gray"
+//         //   floated={false}
+//         //   shadow={false}
+//           className="m-0 grid place-items-center rounded-b-none py-8 px-4 text-center"
+//         >
+//           <div className="mb-4 rounded-full border border-white/10 bg-white/10 p-6 text-white">
+//             {/* <BanknotesIcon className="h-10 w-10" /> */}
+//           </div>
+//           <div  color="white">
+//             Material Tailwind PRO
+//           </div>
+//         </div>
+//         <div>
+//           {/* <button value={type} className="overflow-visible"> */}
+//             <div className="relative z-0 ">
+//               <button value="card" onClick={() => setType('card')}>
+//                 Pay with Card
+//               </button>
+//               <button value="paypal" onClick={() => setType('paypal')}>
+//                 Pay with PayPal
+//               </button>
+//             </div>
+//             {/* <Tabs
+//               className="!overflow-x-hidden !overflow-y-visible"
+//               animate={{
+//                 initial: {
+//                   x: type === 'card' ? 400 : -400,
+//                 },
+//                 mount: {
+//                   x: 0,
+//                 },
+//                 unmount: {
+//                   x: type === 'card' ? 400 : -400,
+//                 },
+//               }}
+//             > */}
+//               <div  className="p-0">
+//                 <form className="mt-12 flex flex-col gap-4">
+//                   <div>
+//                     <div
+//                       color="blue-gray"
+//                       className="mb-4 font-medium"
+//                     >
+//                       Personal Details
+//                     </div>
+//                     <input type="email" placeholder="Email Address" />
+//                   </div>
+
+//                   <div className="my-6">
+//                     <div
+//                       color="blue-gray"
+//                       className="mb-4 font-medium"
+//                     >
+//                       Card Details
+//                     </div>
+
+//                     <input
+//                       placeholder="Card Number"
+//                       maxLength={19}
+//                       value={formatCardNumber(cardNumber)}
+//                       onChange={(event) => setCardNumber(event.target.value)}
+//                     //   icon={
+//                     //     <CreditCardIcon className="h-5 w-5 text-blue-gray-300" />
+//                     //   }
+//                     />
+//                     <div className="my-4 flex items-center gap-4">
+//                       <input
+//                         placeholder="Expires"
+//                         maxLength={5}
+//                         value={formatExpires(cardExpires)}
+//                         onChange={(event) => setCardExpires(event.target.value)}
+//                         //   containerProps={{ className: "min-w-[72px]" }}
+//                       />
+//                       <input
+//                         placeholder="CVC"
+//                         maxLength={4}
+//                         //   containerProps={{ className: "min-w-[72px]" }}
+//                       />
+//                     </div>
+//                     <input placeholder="Holder Name" />
+//                   </div>
+//                   <button className="text-lg">Pay Now</button>
+//                   <div
+//                     color="gray"
+//                     className="mt-2 flex items-center justify-center gap-2 font-normal opacity-60"
+//                   >
+//                     {/* <LockClosedIcon className="-mt-0.5 h-4 w-4" /> */}
+//                      Payments are
+//                     secure and encrypted
+//                   </div>
+//                 </form>
+//               </div>
+//               <div  className="p-0">
+//                 <form className="mt-12 flex flex-col gap-4">
+//                   <div>
+//                     <div
+//                       color="blue-gray"
+//                       className="mb-4 font-medium"
+//                     >
+//                       Personal Details
+//                     </div>
+//                     <input type="email" placeholder="Email Address" />
+//                   </div>
+
+//                   <div className="my-6">
+//                     <div
+//                       color="blue-gray"
+//                       className="mb-4 font-medium"
+//                     >
+//                       Billing Address
+//                     </div>
+
+//                     <div placeholder="Country"  className= 'h-48'>
+//                       {/* {countries.map(({ name }: any) => (
+//                       <Option key={name} value={name}>
+//                         {name}
+//                       </Option>
+//                     ))} */}
+//                     </div>
+//                     <input
+//                       placeholder="Postal Code"
+//                     //   containerProps={{ className: "mt-4" }}
+//                     />
+//                   </div>
+//                   <button  color="amber" className="relative h-12">
+//                     <img
+//                       alt="paypal "
+//                       className="absolute top-2/4 left-2/4 w-16 -translate-x-2/4 -translate-y-2/4"
+//                       src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAxcHgiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAxMDEgMzIiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaW5ZTWluIG1lZXQiIHhtbG5zPSJodHRwOiYjeDJGOyYjeDJGO3d3dy53My5vcmcmI3gyRjsyMDAwJiN4MkY7c3ZnIj48cGF0aCBmaWxsPSIjMDAzMDg3IiBkPSJNIDEyLjIzNyAyLjggTCA0LjQzNyAyLjggQyAzLjkzNyAyLjggMy40MzcgMy4yIDMuMzM3IDMuNyBMIDAuMjM3IDIzLjcgQyAwLjEzNyAyNC4xIDAuNDM3IDI0LjQgMC44MzcgMjQuNCBMIDQuNTM3IDI0LjQgQyA1LjAzNyAyNC40IDUuNTM3IDI0IDUuNjM3IDIzLjUgTCA2LjQzNyAxOC4xIEMgNi41MzcgMTcuNiA2LjkzNyAxNy4yIDcuNTM3IDE3LjIgTCAxMC4wMzcgMTcuMiBDIDE1LjEzNyAxNy4yIDE4LjEzNyAxNC43IDE4LjkzNyA5LjggQyAxOS4yMzcgNy43IDE4LjkzNyA2IDE3LjkzNyA0LjggQyAxNi44MzcgMy41IDE0LjgzNyAyLjggMTIuMjM3IDIuOCBaIE0gMTMuMTM3IDEwLjEgQyAxMi43MzcgMTIuOSAxMC41MzcgMTIuOSA4LjUzNyAxMi45IEwgNy4zMzcgMTIuOSBMIDguMTM3IDcuNyBDIDguMTM3IDcuNCA4LjQzNyA3LjIgOC43MzcgNy4yIEwgOS4yMzcgNy4yIEMgMTAuNjM3IDcuMiAxMS45MzcgNy4yIDEyLjYzNyA4IEMgMTMuMTM3IDguNCAxMy4zMzcgOS4xIDEzLjEzNyAxMC4xIFoiPjwvcGF0aD48cGF0aCBmaWxsPSIjMDAzMDg3IiBkPSJNIDM1LjQzNyAxMCBMIDMxLjczNyAxMCBDIDMxLjQzNyAxMCAzMS4xMzcgMTAuMiAzMS4xMzcgMTAuNSBMIDMwLjkzNyAxMS41IEwgMzAuNjM3IDExLjEgQyAyOS44MzcgOS45IDI4LjAzNyA5LjUgMjYuMjM3IDkuNSBDIDIyLjEzNyA5LjUgMTguNjM3IDEyLjYgMTcuOTM3IDE3IEMgMTcuNTM3IDE5LjIgMTguMDM3IDIxLjMgMTkuMzM3IDIyLjcgQyAyMC40MzcgMjQgMjIuMTM3IDI0LjYgMjQuMDM3IDI0LjYgQyAyNy4zMzcgMjQuNiAyOS4yMzcgMjIuNSAyOS4yMzcgMjIuNSBMIDI5LjAzNyAyMy41IEMgMjguOTM3IDIzLjkgMjkuMjM3IDI0LjMgMjkuNjM3IDI0LjMgTCAzMy4wMzcgMjQuMyBDIDMzLjUzNyAyNC4zIDM0LjAzNyAyMy45IDM0LjEzNyAyMy40IEwgMzYuMTM3IDEwLjYgQyAzNi4yMzcgMTAuNCAzNS44MzcgMTAgMzUuNDM3IDEwIFogTSAzMC4zMzcgMTcuMiBDIDI5LjkzNyAxOS4zIDI4LjMzNyAyMC44IDI2LjEzNyAyMC44IEMgMjUuMDM3IDIwLjggMjQuMjM3IDIwLjUgMjMuNjM3IDE5LjggQyAyMy4wMzcgMTkuMSAyMi44MzcgMTguMiAyMy4wMzcgMTcuMiBDIDIzLjMzNyAxNS4xIDI1LjEzNyAxMy42IDI3LjIzNyAxMy42IEMgMjguMzM3IDEzLjYgMjkuMTM3IDE0IDI5LjczNyAxNC42IEMgMzAuMjM3IDE1LjMgMzAuNDM3IDE2LjIgMzAuMzM3IDE3LjIgWiI+PC9wYXRoPjxwYXRoIGZpbGw9IiMwMDMwODciIGQ9Ik0gNTUuMzM3IDEwIEwgNTEuNjM3IDEwIEMgNTEuMjM3IDEwIDUwLjkzNyAxMC4yIDUwLjczNyAxMC41IEwgNDUuNTM3IDE4LjEgTCA0My4zMzcgMTAuOCBDIDQzLjIzNyAxMC4zIDQyLjczNyAxMCA0Mi4zMzcgMTAgTCAzOC42MzcgMTAgQyAzOC4yMzcgMTAgMzcuODM3IDEwLjQgMzguMDM3IDEwLjkgTCA0Mi4xMzcgMjMgTCAzOC4yMzcgMjguNCBDIDM3LjkzNyAyOC44IDM4LjIzNyAyOS40IDM4LjczNyAyOS40IEwgNDIuNDM3IDI5LjQgQyA0Mi44MzcgMjkuNCA0My4xMzcgMjkuMiA0My4zMzcgMjguOSBMIDU1LjgzNyAxMC45IEMgNTYuMTM3IDEwLjYgNTUuODM3IDEwIDU1LjMzNyAxMCBaIj48L3BhdGg+PHBhdGggZmlsbD0iIzAwOWNkZSIgZD0iTSA2Ny43MzcgMi44IEwgNTkuOTM3IDIuOCBDIDU5LjQzNyAyLjggNTguOTM3IDMuMiA1OC44MzcgMy43IEwgNTUuNzM3IDIzLjYgQyA1NS42MzcgMjQgNTUuOTM3IDI0LjMgNTYuMzM3IDI0LjMgTCA2MC4zMzcgMjQuMyBDIDYwLjczNyAyNC4zIDYxLjAzNyAyNCA2MS4wMzcgMjMuNyBMIDYxLjkzNyAxOCBDIDYyLjAzNyAxNy41IDYyLjQzNyAxNy4xIDYzLjAzNyAxNy4xIEwgNjUuNTM3IDE3LjEgQyA3MC42MzcgMTcuMSA3My42MzcgMTQuNiA3NC40MzcgOS43IEMgNzQuNzM3IDcuNiA3NC40MzcgNS45IDczLjQzNyA0LjcgQyA3Mi4yMzcgMy41IDcwLjMzNyAyLjggNjcuNzM3IDIuOCBaIE0gNjguNjM3IDEwLjEgQyA2OC4yMzcgMTIuOSA2Ni4wMzcgMTIuOSA2NC4wMzcgMTIuOSBMIDYyLjgzNyAxMi45IEwgNjMuNjM3IDcuNyBDIDYzLjYzNyA3LjQgNjMuOTM3IDcuMiA2NC4yMzcgNy4yIEwgNjQuNzM3IDcuMiBDIDY2LjEzNyA3LjIgNjcuNDM3IDcuMiA2OC4xMzcgOCBDIDY4LjYzNyA4LjQgNjguNzM3IDkuMSA2OC42MzcgMTAuMSBaIj48L3BhdGg+PHBhdGggZmlsbD0iIzAwOWNkZSIgZD0iTSA5MC45MzcgMTAgTCA4Ny4yMzcgMTAgQyA4Ni45MzcgMTAgODYuNjM3IDEwLjIgODYuNjM3IDEwLjUgTCA4Ni40MzcgMTEuNSBMIDg2LjEzNyAxMS4xIEMgODUuMzM3IDkuOSA4My41MzcgOS41IDgxLjczNyA5LjUgQyA3Ny42MzcgOS41IDc0LjEzNyAxMi42IDczLjQzNyAxNyBDIDczLjAzNyAxOS4yIDczLjUzNyAyMS4zIDc0LjgzNyAyMi43IEMgNzUuOTM3IDI0IDc3LjYzNyAyNC42IDc5LjUzNyAyNC42IEMgODIuODM3IDI0LjYgODQuNzM3IDIyLjUgODQuNzM3IDIyLjUgTCA4NC41MzcgMjMuNSBDIDg0LjQzNyAyMy45IDg0LjczNyAyNC4zIDg1LjEzNyAyNC4zIEwgODguNTM3IDI0LjMgQyA4OS4wMzcgMjQuMyA4OS41MzcgMjMuOSA4OS42MzcgMjMuNCBMIDkxLjYzNyAxMC42IEMgOTEuNjM3IDEwLjQgOTEuMzM3IDEwIDkwLjkzNyAxMCBaIE0gODUuNzM3IDE3LjIgQyA4NS4zMzcgMTkuMyA4My43MzcgMjAuOCA4MS41MzcgMjAuOCBDIDgwLjQzNyAyMC44IDc5LjYzNyAyMC41IDc5LjAzNyAxOS44IEMgNzguNDM3IDE5LjEgNzguMjM3IDE4LjIgNzguNDM3IDE3LjIgQyA3OC43MzcgMTUuMSA4MC41MzcgMTMuNiA4Mi42MzcgMTMuNiBDIDgzLjczNyAxMy42IDg0LjUzNyAxNCA4NS4xMzcgMTQuNiBDIDg1LjczNyAxNS4zIDg1LjkzNyAxNi4yIDg1LjczNyAxNy4yIFoiPjwvcGF0aD48cGF0aCBmaWxsPSIjMDA5Y2RlIiBkPSJNIDk1LjMzNyAzLjMgTCA5Mi4xMzcgMjMuNiBDIDkyLjAzNyAyNCA5Mi4zMzcgMjQuMyA5Mi43MzcgMjQuMyBMIDk1LjkzNyAyNC4zIEMgOTYuNDM3IDI0LjMgOTYuOTM3IDIzLjkgOTcuMDM3IDIzLjQgTCAxMDAuMjM3IDMuNSBDIDEwMC4zMzcgMy4xIDEwMC4wMzcgMi44IDk5LjYzNyAyLjggTCA5Ni4wMzcgMi44IEMgOTUuNjM3IDIuOCA5NS40MzcgMyA5NS4zMzcgMy4zIFoiPjwvcGF0aD48L3N2Zz4"
+//                     />
+//                   </button>
+//                   <div
+//                     color="gray"
+//                     className="mt-2 flex items-center justify-center gap-2 font-normal opacity-60"
+//                   >
+//                     {/* <LockClosedIcon className="-mt-0.5 h-4 w-4" />  */}
+//                     Payments are
+//                     secure and encrypted
+//                   </div>
+//                 </form>
+//               </div>
+//             {/* </Tabs>
+//           </button> */}
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }

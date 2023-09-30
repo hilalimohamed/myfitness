@@ -1,6 +1,7 @@
 import Head from "next/head"
 import Start from "../components/firstpage/Start"
 import Advices from "../components/firstpage/Adices"
+import UpdateForm from "../components/UpdateForm"
 // import { GetServerSideProps } from "next"
 
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
       <div>
         <Start/>
         <Advices/>
+        {/* <UpdateForm/> */}
       </div>
     </>
   )

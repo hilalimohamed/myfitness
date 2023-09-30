@@ -9,14 +9,69 @@ datasource db {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  username    String    
-  email       String    @unique
-  password    String
+  id                String    @id @default(cuid())
+  username          String    
+  email             String    @unique
+  password          String
+  isVerified        Boolean   @default(false)
+  verifyToken       String?
+  verifyTokenExpiry DateTime? 
+  profile           Profile?
+  meals             Meal[]
 }
-  // isVerfied   Boolean   @default(false)
+  model Profile {
+  id          String      @id @default(cuid())
+  userId      String      @unique
+  user        User     @relation(fields: [userId], references: [id])
+  imagePath   String
+  activitie   String?
+  sex         String?
+  birthdate   DateTime?
+  country     String?
+  tall        Float?
+  weight      Float?
+  weightGoal  Float?
+  goals       Goal[]
+}
+model Goal {
+  id      Int      @id @default(autoincrement())
+  name    String
+  profile Profile  @relation(fields: [profileId], references: [id])
+  profileId String
+
+  @@index([profileId])
+}
+
+// Meal model
+model Meal {
+  id       String   @id @default(cuid())
+  userId   String   @unique
+  mealtype String?   //  breakfast, lunch, dinner, snacks
+  user     User     @relation(fields: [userId], references: [id])
+  items    FoodItem[]
+
+}
+
+// FoodItem model
+model FoodItem {
+  id       Int      @id @default(autoincrement())
+  name     String
+  servings Float?
+  calories Float
+  carbs    Float
+  fat      Float
+  protein  Float
+  sodium   Float
+  sugar    Float
+  meal     Meal     @relation(fields: [mealId], references: [id])
+  mealId   String
+
+  @@index([mealId])
+}
+  // isVerified   Boolean   @default(false)
   // isAdmin Boolean @default(false)
   // forgotPasswordToken String
   // forgotPasswordTokenExpire DateTime
   // verifyToken String
   // verifyTokenExpire DateTime
+
